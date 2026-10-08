@@ -169,10 +169,18 @@ def main():
     ### run 2: 4.288382800000363
     ### run 3: 4.319270300000426
 
-    ### paralell run 1: 2.8625615000055404
-    ### paralell run 2: 2.8251995999889914
-    ### paralell run 3: 2.8469077999907313
+    ###my pc:
 
+    ### Paralell run 1: 2.8625615000055404
+    ### Paralell run 2: 2.8251995999889914
+    ### Paralell run 3: 2.8469077999907313
+    
+    ###Linux server:
+
+
+    ### Parallel run 1: 1.5116 seconds 
+    ### Parallel run 2: 1.4744 seconds 
+    ### Parallel run 3: 1.4776 seconds 
     
 
 if __name__ == '__main__':
