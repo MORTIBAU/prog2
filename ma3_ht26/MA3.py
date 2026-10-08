@@ -6,6 +6,8 @@ Reviewed by:
 Date reviewed:
 
 """
+#!/usr/bin/env python3
+
 import random
 import matplotlib.pyplot as plt
 import math as m
