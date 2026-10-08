@@ -6,15 +6,13 @@ Reviewed by:
 Date reviewed:
 
 """
-#!/usr/bin/env python3
-
 import random
 import matplotlib.pyplot as plt
 import math as m
 import concurrent.futures as future
 from statistics import mean 
 from time import perf_counter as pc
-from numba import njit
+from numba import njit, prange
 
 # Exc1
 def approximate_pi(n, r = 1):
@@ -114,10 +112,27 @@ def sphere_volume_parallel(n, d, np=10):
 
     return mean(results)
 
+
+@njit(parallel=True)
+def sphere_volume_numba_parallel(n: int, d: int, r: float = 1.0) -> float:
+    inside_count = 0
+    r_sq = r * r
+    
+    # prange automatically splits the 'n' iterations across CPU cores
+    for _ in range(n):
+        sum_sq = 0.0
+        for _ in prange(d):
+            x = random.uniform(-r, r)
+            sum_sq += x * x
+            
+        if sum_sq <= r_sq:
+            inside_count += 1
+            
+    return (inside_count / n) * ((2 * r) ** d)
     
 def main():
     # Exc1
-    dots = [1000, 10000, 100000]
+    """ dots = [1000, 10000, 100000]
     for n in dots:
         approximate_pi(n)
 
@@ -159,20 +174,31 @@ def main():
     print(f"Exc4: Sequential time of {d} and {n}: {stop-start}")
     print("What is parallel time?") 
 
-    for i in range(1, 4):
-        start = pc()
-        vol = sphere_volume_parallel(n, d)
-        stop = pc()
-        print(f"Parallel run {i}: {stop - start:.4f} seconds (volume: {vol:.4f})")
-
     ### run 1: 4.342626599999676
     ### run 2: 4.288382800000363
     ### run 3: 4.319270300000426
 
     ### paralell run 1: 2.8625615000055404
     ### paralell run 2: 2.8251995999889914
-    ### paralell run 3: 2.8469077999907313
+    ### paralell run 3: 2.8469077999907313"""
 
+    # Measure Call 1 (Triggers Compilation)
+t0 = pc()
+res1 = sphere_volume_numba(1000000, 11)
+t1 = pc()
+print(f"Call 1 (Compile + Run): {t1 - t0:.4f} seconds")
+
+# Measure Call 2 (Uses Cached Machine Code)
+t2 = pc()
+res2 = sphere_volume_numba(1000000, 11)
+t3 = pc()
+print(f"Call 2 (Compiled Execution): {t3 - t2:.4f} seconds")
+
+# Measure Call 3 (Uses Cached Machine Code)
+t4 = pc()
+res3 = sphere_volume_numba(1000000, 11)
+t5 = pc()
+print(f"Call 3 (Compiled Execution): {t5 - t4:.4f} seconds")
     
 
 if __name__ == '__main__':
