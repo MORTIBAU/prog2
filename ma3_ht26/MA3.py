@@ -3,8 +3,8 @@
 
 Student: Olof Rörby
 Mail: Ollerorby@hotmail.se
-Reviewed by:
-Date reviewed:
+Reviewed by:Shengkai Chen
+Date reviewed: 2026-10-09
 
 """
 import random
@@ -61,9 +61,7 @@ def sphere_volume(n, d, r = 1):
     points = [[random.uniform(-r, r) for _ in range(d)] for _ in range(n)]
 
     inside_points = list(filter(
-         lambda pt: sum(map(lambda x: x**2, pt)) <= r **2,
-         points
-    ))
+         lambda pt: sum(map(lambda x: x**2, pt)) <= r **2, points))
 
     n_c = len(inside_points)
     return (n_c / n) * ((2 * r) ** d)
@@ -144,7 +142,7 @@ def main():
         start = pc()
         vol = sphere_volume_numba(n, d)
         stop = pc()
-        print(f"Parallel run {i}: {stop - start:.4f} seconds (volume: {vol:.4f})")
+        print(f"Numba run {i}: {stop - start:.4f} seconds (volume: {vol:.4f})")
 
     ### run 1: 4.342626599999676
     ### run 2: 4.288382800000363
@@ -187,6 +185,6 @@ def main():
     ### Parallel run 2: 1.4744 seconds 
     ### Parallel run 3: 1.4776 seconds 
     
-
+    ### both much slower than numba
 if __name__ == '__main__':
 	main()
