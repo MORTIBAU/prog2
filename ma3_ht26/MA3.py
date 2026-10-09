@@ -135,10 +135,16 @@ def main():
     n = 1000000
     d = 11
     start = pc()
-    sphere_volume_numba(n, d)
+    sphere_volume(n, d)
     stop = pc()
     print(f"Exc3: Sequential time of {d} and {n}: {stop-start}")
     print("What is numba time?")
+
+    for i in range(1, 4):
+        start = pc()
+        vol = sphere_volume_numba(n, d)
+        stop = pc()
+        print(f"Parallel run {i}: {stop - start:.4f} seconds (volume: {vol:.4f})")
 
     ### run 1: 4.342626599999676
     ### run 2: 4.288382800000363
@@ -153,7 +159,7 @@ def main():
     n = 1000000
     d = 11
     start = pc()
-    sphere_volume_parallel(n, d)
+    sphere_volume(n, d)
     stop = pc()
     print(f"Exc4: Sequential time of {d} and {n}: {stop-start}")
     print("What is parallel time?") 
