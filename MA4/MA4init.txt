@@ -3,8 +3,6 @@
 
 # Add your own tests here
 
-
-
 # Remove the comment character to try the following
 
 1 - (5-2*2)/(1+1) - (-2 + 1)      # 
@@ -23,7 +21,7 @@ ans
 fac(ans)                        # Factorial.  Note integer!
 fac(2.5)                          # Illegal argument
 fac(40)                           # Big number
-#2 ++ 4*ans/0                      # Syntax error before evaluation error
-#ans/0 + * x                       # Evaluation before syntax error
+2 ++ 4*ans/0                      # Syntax error before evaluation error
+ans/0 + * x                       # Evaluation before syntax error
 
 # Write tests interactively now!

@@ -41,7 +41,13 @@ def fib(n):
         a, b = b, a + b
     return b
 
+def mean(args):
+    if not args:
+        raise EvaluationError("mean requires at least one argument")
+    return sum(args) / len(args)
+
 function_1 = {'sin': math.sin,'cos': math.cos,'exp': math.exp,'log': log, 'fac': fac, 'fib': fib, }
+function_n = {'max':max, 'min': min, 'sum': sum, 'mean': mean}
 
 class EvaluationError(Exception):
     def __init__(self, arg):
@@ -112,6 +118,24 @@ def term(wtok, variables):
     return result
 
 
+def arglist(wtok, variables):
+    if wtok.get_current() != '(':
+        raise CalculatorSyntaxError("Expected '('")
+    wtok.next()
+
+    args = []
+    while True:
+        args.append(assignment(wtok, variables))
+        if wtok.get_current() == ',':
+            wtok.next()
+        elif wtok.get_current() == ')':
+            wtok.next()
+            break
+        else:
+            raise CalculatorSyntaxError("Expected ',' or ')'")
+
+    return args
+
 def factor(wtok, variables):
     """ See syntax chart for factor"""
     if wtok.get_current() == '(':
@@ -140,6 +164,11 @@ def factor(wtok, variables):
             else:
                 raise CalculatorSyntaxError("Expected '(' after function name ")
 
+        elif name in function_n:
+            wtok.next()
+            args_list = arglist(wtok, variables)
+            result = function_n[name](args_list)
+        
         elif name in variables:
             result = variables[name]
             wtok.next()
