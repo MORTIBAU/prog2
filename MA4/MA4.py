@@ -87,7 +87,7 @@ def factor(wtok, variables):
         name = wtok.get_current()
         if name in variables:
             result = variables[name]
-            wtok.nex()
+            wtok.next()
         else:
             raise EvaluationError(f'Variable {name} not defined')
 
@@ -143,6 +143,7 @@ def main():
             try:
                 result = statement(wtok, variables)
                 print('Result:', result)
+                variables['ans'] = result
 
             except CalculatorSyntaxError as se:
                 print("*** Syntax error: ", se)
