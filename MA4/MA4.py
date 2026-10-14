@@ -17,7 +17,30 @@ import math
 from tokenize import TokenError  
 from MA4tokenizer import TokenizeWrapper
 
-function_1 = {'sin': math.sin,'cos': math.cos,'exp': math.exp,'log': math.log,}
+def log(n):
+    if n <=0:
+        raise EvaluationError(f"Argument to log is {n}. Must be > 0")
+
+def fac(n):
+    if n < 0 or int(n) != n:
+        raise EvaluationError(f"Argument to fac is {n}. Must be integer >= 0")
+    return math.factorial(int(n))
+
+def fib(n):
+    if n < 0 or int(n) != n:
+        raise EvaluationError(f"Argument to fib is {n}. Must be integer >= 0")
+    n = int(n)
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    
+    a, b = 0, 1
+    for _ in range(2, n + 1):
+        a, b = b, a + b
+    return b
+
+function_1 = {'sin': math.sin,'cos': math.cos,'exp': math.exp,'log': log, 'fac': fac, 'fib': fib, }
 
 class EvaluationError(Exception):
     def __init__(self, arg):
@@ -35,6 +58,9 @@ class CalculatorSyntaxError(Exception):
 def statement(wtok, variables):
     """ See syntax chart for statement"""
     result = assignment(wtok, variables)
+
+    if not wtok.is_at_end():
+        raise CalculatorSyntaxError("Unexpected token")
     return result
 
 
@@ -116,7 +142,7 @@ def factor(wtok, variables):
             result = variables[name]
             wtok.next()
         else:
-            raise EvaluationError(f'Variable {name} not defined')   
+            raise EvaluationError(f"Undefined variable: '{name}'")   
         
     elif wtok.get_current() == '-':
         wtok.next()
@@ -128,7 +154,7 @@ def factor(wtok, variables):
 
     else:
         raise CalculatorSyntaxError(
-            "Expected number or '('")  
+            "Expected number, word or '('")  
     return result
 
 
@@ -179,8 +205,12 @@ def main():
 
             except CalculatorSyntaxError as se:
                 print("*** Syntax error: ", se)
+                curr_tok = wtok.get_current()
+                if wtok.is_at_end() or curr_tok.strip() == "":
+                    curr_tok = '*EOL*'
+
                 print(
-                f"Error occurred at '{wtok.get_current()}' just after '{wtok.get_previous()}'")
+                f"Error occurred at token '{curr_tok}' just after token '{wtok.get_previous()}'")
 
             except EvaluationError as ee:
                 print("*** Evaluation error:", ee)

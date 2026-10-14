@@ -19,10 +19,10 @@ vars                              # Prints variable values
 2*ans + 5                         # Result from last top level expression
 ans
 1 + z                             # Undefined variable
-#1+fib(5)        
-#fac(ans)                        # Factorial.  Note integer!
-#fac(2.5)                          # Illegal argument
-#fac(40)                           # Big number
+1+fib(5)        
+fac(ans)                        # Factorial.  Note integer!
+fac(2.5)                          # Illegal argument
+fac(40)                           # Big number
 #2 ++ 4*ans/0                      # Syntax error before evaluation error
 #ans/0 + * x                       # Evaluation before syntax error
 
