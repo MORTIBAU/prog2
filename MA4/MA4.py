@@ -17,6 +17,8 @@ import math
 from tokenize import TokenError  
 from MA4tokenizer import TokenizeWrapper
 
+function_1 = {'sin': math.sin,'cos': math.cos,'exp': math.exp,'log': math.log,}
+
 class EvaluationError(Exception):
     def __init__(self, arg):
         self.arg = arg
@@ -85,12 +87,27 @@ def factor(wtok, variables):
 
     elif wtok.is_name():
         name = wtok.get_current()
-        if name in variables:
+        if name in function_1:
+            wtok.next()
+
+            if wtok.get_current() == '(':
+                wtok.next()
+                arg_value = assignment(wtok, variables)
+
+                if wtok.get_current() != ')':
+                    raise CalculatorSyntaxError("Expected')")
+                wtok.next
+                result = function_1[name](arg_value)
+
+            else:
+                raise CalculatorSyntaxError("Expected '(' after function name ")
+
+        elif name in variables:
             result = variables[name]
             wtok.next()
         else:
-            raise EvaluationError(f'Variable {name} not defined')
-
+            raise EvaluationError(f'Variable {name} not defined')   
+        
     elif wtok.get_current() == '-':
         wtok.next()
         result = -factor(wtok, variables)
