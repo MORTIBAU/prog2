@@ -17,8 +17,16 @@ import math
 from tokenize import TokenError  
 from MA4tokenizer import TokenizeWrapper
 
+class EvaluationError(Exception):
+    def __init__(self, arg):
+        self.arg = arg
+        super().__init__(self.arg)
+    pass
 
 class CalculatorSyntaxError(Exception):
+    def __init__(self, arg):
+        self.arg = arg
+        super().__init__(self.arg)
     pass
 
 
@@ -37,18 +45,31 @@ def assignment(wtok, variables):
 def expression(wtok, variables):
     """ See syntax chart for expression"""
     result = term(wtok, variables)
-    while wtok.get_current() == '+':
-        wtok.next()
-        result = result + term(wtok, variables)
+    while wtok.get_current() == '+' or wtok.get_current() == '-':
+            if wtok.get_current() == '+':
+                wtok.next()
+                result = result + term(wtok, variables)
+            elif wtok.get_current() == '-':
+                wtok.next()
+                result = result - term(wtok, variables)
     return result
 
 
 def term(wtok, variables):
     """ See syntax chart for term"""
     result = factor(wtok, variables)
-    while wtok.get_current() == '*': 
-        wtok.next()
-        result = result * factor(wtok, variables)
+    while wtok.get_current() == '*' or wtok.get_current() == '/': 
+        if wtok.get_current() == '*':
+            wtok.next()
+            result = result * factor(wtok, variables)
+        elif wtok.get_current() == '/':
+            wtok.next()
+            denominator = factor(wtok, variables)
+            if denominator == 0:
+                raise EvaluationError('Division by zero')
+            result = result / denominator
+
+             
     return result
 
 
@@ -61,6 +82,18 @@ def factor(wtok, variables):
             raise CalculatorSyntaxError("Expected ')'")
         else:
             wtok.next()
+
+    elif wtok.is_name():
+        name = wtok.get_current()
+        if name in variables:
+            result = variables[name]
+            wtok.nex()
+        else:
+            raise EvaluationError(f'Variable {name} not defined')
+
+    elif wtok.get_current() == '-':
+        wtok.next()
+        result = -factor(wtok, variables)
             
     elif wtok.is_number():
         result = float(wtok.get_current())
@@ -72,7 +105,6 @@ def factor(wtok, variables):
     return result
 
 
-         
 def main():
     """
     Handles:
@@ -83,7 +115,7 @@ def main():
     """
     
     print("Numerical calculator")
-    variables = {"ans": 0.0}
+    variables = {"ans": 0.0, "PI": math.pi, "E": math.e}
     # Note: The unit test file initiate variables in this way. If your implementation 
     # requires another initiation you have to update the test file accordingly.
     init_file = 'MA4init.txt'
