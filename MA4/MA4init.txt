@@ -11,14 +11,14 @@
 sin(3.14159265)                   # Standard functions
 cos(PI)                           # Predefined constant
 log(exp(4*0.5 - 1))               # Standard functions
-#1 + 2 + 3 = x                     # Variables. Assignment to the RIGHT!
-#x/2 + x
-#(1=x) + sin(2=y)                  # Assignments
-#vars                              # Prints variable values
-#1+2
-#2*ans + 5                         # Result from last top level expression
-#ans
-#1 + z                             # Undefined variable
+1 + 2 + 3 = x                     # Variables. Assignment to the RIGHT!
+x/2 + x
+(1=x) + sin(2=y)                  # Assignments
+vars                              # Prints variable values
+1+2
+2*ans + 5                         # Result from last top level expression
+ans
+1 + z                             # Undefined variable
 #1+fib(5)        
 #fac(ans)                        # Factorial.  Note integer!
 #fac(2.5)                          # Illegal argument

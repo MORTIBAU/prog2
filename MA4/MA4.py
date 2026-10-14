@@ -41,6 +41,16 @@ def statement(wtok, variables):
 def assignment(wtok, variables):
     """ See syntax chart for assignment"""
     result = expression(wtok, variables)
+    
+    while wtok.get_current() == '=':
+        wtok.next() 
+        
+        if wtok.is_name():
+            variables[wtok.get_current()] = result
+            wtok.next() 
+        else:
+            raise CalculatorSyntaxError("Expected variable after '='")
+            
     return result
 
 
@@ -156,6 +166,11 @@ def main():
         if wtok.get_current() == 'quit':
             print('Bye')
             exit()
+
+        elif wtok.get_current() == 'vars':
+            for var_name, var_value in variables.items():
+                print(f"{var_name:<5} : {var_value}")
+                continue
         else:
             try:
                 result = statement(wtok, variables)
@@ -166,6 +181,9 @@ def main():
                 print("*** Syntax error: ", se)
                 print(
                 f"Error occurred at '{wtok.get_current()}' just after '{wtok.get_previous()}'")
+
+            except EvaluationError as ee:
+                print("*** Evaluation error:", ee)
 
             except TokenError as te:
                 print('*** Syntax error: Unbalanced parentheses')
