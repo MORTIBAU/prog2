@@ -20,6 +20,7 @@ from MA4tokenizer import TokenizeWrapper
 def log(n):
     if n <=0:
         raise EvaluationError(f"Argument to log is {n}. Must be > 0")
+    return math.log(n)
 
 def fac(n):
     if n < 0 or int(n) != n:
@@ -54,13 +55,13 @@ class CalculatorSyntaxError(Exception):
         super().__init__(self.arg)
     pass
 
-
 def statement(wtok, variables):
     """ See syntax chart for statement"""
     result = assignment(wtok, variables)
-
+    
     if not wtok.is_at_end():
         raise CalculatorSyntaxError("Unexpected token")
+        
     return result
 
 
@@ -132,7 +133,8 @@ def factor(wtok, variables):
 
                 if wtok.get_current() != ')':
                     raise CalculatorSyntaxError("Expected')")
-                wtok.next
+                
+                wtok.next()
                 result = function_1[name](arg_value)
 
             else:
