@@ -32,7 +32,6 @@ async def process_math_request(request: Request, calc_session: Optional[str], ma
     wtok = TokenizeWrapper(data)
     
     try:
-        # 3. Run the math function
         result = math_function(wtok, variables)
         if math_function == statement:
             variables['ans'] = result
