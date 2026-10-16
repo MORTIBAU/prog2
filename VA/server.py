@@ -1,5 +1,5 @@
-from fastapi import FastAPI, HTTPException, Response, Cookie
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException, Request, Cookie
+from fastapi.responses import PlainTextResponse
 from typing import Dict, Optional
 import math
 import json
@@ -9,12 +9,7 @@ from tokenize import TokenError
 from MA4 import statement, assignment, expression, term, factor
 from MA4 import TokenizeWrapper, CalculatorSyntaxError, EvaluationError
 
-# Initialize the FastAPI app
 app = FastAPI(title="MA4 Calculator Web Server")
-
-class CalcRequest(BaseModel):
-    data: str
-    vars: Dict[str, float] = {}
 
 def initialize_vars(variables: Dict[str, float]) -> Dict[str, float]:
     if "PI" not in variables:
@@ -25,21 +20,30 @@ def initialize_vars(variables: Dict[str, float]) -> Dict[str, float]:
         variables["ans"] = 0.0
     return variables
 
-def process_math_request(req: CalcRequest, response: Response, calc_session: Optional[str], math_function):
-    # 1. Load cookie
+# Notice the 'async' here so we can await the reading of the raw body
+async def process_math_request(request: Request, calc_session: Optional[str], math_function):
+    # 1. Read the raw text/plain body from the request
+    body_bytes = await request.body()
+    data = body_bytes.decode("utf-8")
+    
+    # 2. Load memory from the cookie (no variables in the payload anymore)
     cookie_vars = json.loads(calc_session) if calc_session else {}
-    variables = initialize_vars({**cookie_vars, **req.vars})
-    wtok = TokenizeWrapper(req.data)
+    variables = initialize_vars(cookie_vars)
+    wtok = TokenizeWrapper(data)
     
     try:
-        # 2. Run whichever math function was passed in (statement, factor, etc.)
+        # 3. Run the math function
         result = math_function(wtok, variables)
         if math_function == statement:
             variables['ans'] = result
             
-        # 3. Save cookie and return
-        response.set_cookie(key="calc_session", value=json.dumps(variables))
-        return {"value": result, "vars": variables}
+        # 4. Create a plain text response with just the number (adding \n for terminal readability)
+        resp = PlainTextResponse(str(result) + "\n")
+        
+        # 5. Save the updated variables back into the cookie
+        resp.set_cookie(key="cookiefile", value=json.dumps(variables))
+        
+        return resp
         
     except CalculatorSyntaxError as se:
         raise HTTPException(status_code=400, detail=f"Syntax Error: {str(se)}")
@@ -49,25 +53,28 @@ def process_math_request(req: CalcRequest, response: Response, calc_session: Opt
         raise HTTPException(status_code=400, detail="Syntax Error: Unbalanced parentheses")
 
 @app.post("/statement")
-def calculate_statement(req: CalcRequest, response: Response, calc_session: Optional[str] = Cookie(default=None)):
-    return process_math_request(req, response, calc_session, statement)
+async def calculate_statement(request: Request, cookiefile: Optional[str] = Cookie(default=None)):
+    return await process_math_request(request, cookiefile, statement)
 
 @app.post("/assignment")
-def calculate_assignment(req: CalcRequest, response: Response, calc_session: Optional[str] = Cookie(default=None)):
-    return process_math_request(req, response, calc_session, assignment)
+async def calculate_assignment(request: Request, cookiefile: Optional[str] = Cookie(default=None)):
+    return await process_math_request(request, cookiefile, assignment)
 
 @app.post("/expression")
-def calculate_expression(req: CalcRequest, response: Response, calc_session: Optional[str] = Cookie(default=None)):
-    return process_math_request(req, response, calc_session, expression)
+async def calculate_expression(request: Request, cookiefile: Optional[str] = Cookie(default=None)):
+    return await process_math_request(request, cookiefile, expression)
 
 @app.post("/factor")
-def calculate_factor(req: CalcRequest, response: Response, calc_session: Optional[str] = Cookie(default=None)):
-    return process_math_request(req, response, calc_session, factor)
+async def calculate_factor(request: Request, cookiefile: Optional[str] = Cookie(default=None)):
+    return await process_math_request(request, cookiefile, factor)
 
 @app.post("/term")
-def calculate_term(req: CalcRequest, response: Response, calc_session: Optional[str] = Cookie(default=None)):
-    return process_math_request(req, response, calc_session, term)
+async def calculate_term(request: Request, cookiefile: Optional[str] = Cookie(default=None)):
+    return await process_math_request(request, cookiefile, term)
+
+
+
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=4999)
+    uvicorn.run(app, host="127.0.0.1", port=4998)
