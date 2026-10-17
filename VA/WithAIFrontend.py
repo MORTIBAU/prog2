@@ -5,7 +5,6 @@ import math
 import json
 from tokenize import TokenError
 
-# Import your completed functions and error classes from MA4
 from MA4 import statement, assignment, expression, term, factor
 from MA4 import TokenizeWrapper, CalculatorSyntaxError, EvaluationError
 
@@ -20,27 +19,21 @@ def initialize_vars(variables: Dict[str, float]) -> Dict[str, float]:
         variables["ans"] = 0.0
     return variables
 
-# Notice the 'async' here so we can await the reading of the raw body
 async def process_math_request(request: Request, calc_session: Optional[str], math_function):
-    # 1. Read the raw text/plain body from the request
     body_bytes = await request.body()
     data = body_bytes.decode("utf-8")
     
-    # 2. Load memory from the cookie (no variables in the payload anymore)
     cookie_vars = json.loads(calc_session) if calc_session else {}
     variables = initialize_vars(cookie_vars)
     wtok = TokenizeWrapper(data)
     
     try:
-        # 3. Run the math function
         result = math_function(wtok, variables)
         if math_function == statement:
             variables['ans'] = result
             
-        # 4. Create a plain text response with just the number (adding \n for terminal readability)
         resp = PlainTextResponse(str(result) + "\n")
         
-        # 5. Save the updated variables back into the cookie
         resp.set_cookie(key="cookiefile", value=json.dumps(variables))
         
         return resp
@@ -79,7 +72,7 @@ async def calculator_frontend():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>MA4 Calculator</title>
+        <title>Calculator</title>
         <style>
             body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
             input { width: 75%; padding: 10px; font-size: 16px; }
@@ -88,7 +81,7 @@ async def calculator_frontend():
         </style>
     </head>
     <body>
-        <h2>MA4 Calculator</h2>
+        <h2>Calculator</h2>
         <div>
             <input type="text" id="expr" placeholder="Enter expression, e.g. ((3+5=a)+4=b)+8" onkeydown="if(event.key === 'Enter') calc()">
             <button onclick="calc()">Calculate</button>
