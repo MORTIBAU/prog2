@@ -1,7 +1,8 @@
 """
 Solutions to module 4 - A calculator
-Student: 
-Mail:
+Student: Olof Rörby
+Mail: Ollerorby@hotmail.se
+
 """
 
 """
@@ -156,7 +157,7 @@ def factor(wtok, variables):
                 arg_value = assignment(wtok, variables)
 
                 if wtok.get_current() != ')':
-                    raise CalculatorSyntaxError("Expected')")
+                    raise CalculatorSyntaxError("Expected')'")
                 
                 wtok.next()
                 result = function_1[name](arg_value)
@@ -174,14 +175,14 @@ def factor(wtok, variables):
             wtok.next()
         else:
             raise EvaluationError(f"Undefined variable: '{name}'")   
-        
-    elif wtok.get_current() == '-':
-        wtok.next()
-        result = -factor(wtok, variables)
             
     elif wtok.is_number():
         result = float(wtok.get_current())
         wtok.next()
+
+    elif wtok.get_current() == '-':
+        wtok.next()
+        result = -factor(wtok, variables)
 
     else:
         raise CalculatorSyntaxError(
