@@ -32,8 +32,9 @@ async def process_math_request(request: Request, calc_session: Optional[str], ma
         result = math_function(wtok, variables)
         if math_function == statement:
             variables['ans'] = result
-
+            
         resp = PlainTextResponse(str(result) + "\n")
+        
         resp.set_cookie(key="cookiefile", value=json.dumps(variables))
         
         return resp

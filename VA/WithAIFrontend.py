@@ -5,7 +5,10 @@ import math
 import json
 from tokenize import TokenError
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> d0712759e30ca9bf7bf0b259aa00eb9477e2fed8
 from MA4 import statement, assignment, expression, term, factor
 from MA4 import TokenizeWrapper, CalculatorSyntaxError, EvaluationError
 
@@ -73,7 +76,7 @@ async def calculator_frontend():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>MA4 Calculator</title>
+        <title>Calculator</title>
         <style>
             body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
             input { width: 75%; padding: 10px; font-size: 16px; }
@@ -82,7 +85,7 @@ async def calculator_frontend():
         </style>
     </head>
     <body>
-        <h2>MA4 Calculator</h2>
+        <h2>Calculator</h2>
         <div>
             <input type="text" id="expr" placeholder="Enter expression, e.g. ((3+5=a)+4=b)+8" onkeydown="if(event.key === 'Enter') calc()">
             <button onclick="calc()">Calculate</button>
